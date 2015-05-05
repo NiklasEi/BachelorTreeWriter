@@ -57,7 +57,8 @@ class TreeWriter {
     TTree outputTree;
 
     std::map< std::string, TH2F > hist2D;
-    
+    std::map< std::string, TH1F > hist1D;
+
     
 	unsigned int nTracksPV;
     unsigned int nVertex;

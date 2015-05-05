@@ -227,7 +227,7 @@ TreeWriter::TreeWriter( int nFiles, char** fileList, std::string const& outputNa
 
    hist2D["matchGenPhoton"]   = TH2F("", ";#DeltaR;p_{T}^{gen} / p_{T}", 1000, 0, .5, 200, 0, 2 );
    hist2D["matchGenElectron"] = TH2F("", ";#DeltaR;p_{T}^{gen} / p_{T}", 1000, 0, .5, 200, 0, 2 );
-	
+   hist1D["nGen"] = TH1F("", ";nGen;", 1, 0, 1 );
 }
 
 TreeWriter::~TreeWriter() {
@@ -405,12 +405,12 @@ void TreeWriter::Loop() {
 tree::Photon photonToTree;
 
    for (long jentry=0; jentry < inputTree.GetEntries(); ++jentry) {
-      //if( jentry > 50000 ) break;
+      if( jentry > 10 ) break;
       event.getEntry(jentry);
 
       // For data, the weight is 1. Else take the pileup weight.
       weight = event.isRealData ? 1. : getPileUpWeight();
-
+      hist1D["nGen"].Fill( 0 );
       if ( event.isRealData && !isGoodLumi() ) continue;
       if ( event.isRealData && !passTrigger() ) continue;
       //Generierte Teilchen einlesen
@@ -543,6 +543,16 @@ tree::Photon photonToTree;
 
    outFile.cd();
    outputTree.Write();
+    
+   for( auto m: hist2D){
+	   m.second.SetName(m.first.c_str());
+	   m.second.Write();
+   }
+   for( auto m: hist1D){
+	   m.second.SetName(m.first.c_str());
+	   m.second.Write();
+   }
+
 }
 
 
