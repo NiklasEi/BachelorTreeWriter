@@ -23,7 +23,7 @@ $(EXE): $(OBJ) $(SHARED_LIB)
 lib%.so: %.h %_LinkDef.h
 	rootcint -f $(subst so,cxx,$@) -c $+
 	g++ -std=gnu++11 -O2 -Wall  -shared -fPIC `root-config --ldflags` $(INCS) -o $@ $(subst lib,,$(subst so,cc,$@)) $(subst so,cxx,$@)
-	@if [ -d $(CMSSW_BASE)/lib/$(SCRAM_ARCH) -a "$(CMSSW_BASE)" != "" ]; then\
+#	@if [ -d $(CMSSW_BASE)/lib/$(SCRAM_ARCH) -a "$(CMSSW_BASE)" != "" ]; then\
 		cp $@ $(CMSSW_BASE)/lib/$(SCRAM_ARCH);\
 	else\
 		echo -e "\n#############################################\n### Please copy the library manually to $(root-config --libdir)! ### \n#############################################\n";\
