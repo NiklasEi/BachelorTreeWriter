@@ -84,6 +84,7 @@ bool isLooseJet( const susy::PFJet& jet ) {
     * See https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID#Recommendations_for_7_TeV_data_a
     * for more information.
     */
+
    double energy = jet.momentum.E();
    return (jet.neutralHadronEnergy+jet.HFHadronEnergy) / energy < 0.99
       && jet.neutralEmEnergy / energy < 0.99
@@ -104,8 +105,8 @@ bool goodVertex( const susy::Vertex& vtx ) {
 }
 
 unsigned int numberOfGoodVertexInCollection( const std::vector<susy::Vertex>& vertexVector ) {
-   /* Counts the number of good vertices in the vertex Vector
-   */
+   // Counts the number of good vertices in the vertex Vector
+   
    unsigned int number = 0;
    for( std::vector<susy::Vertex>::const_iterator vtx = vertexVector.begin();
       vtx != vertexVector.end(); ++vtx ) {
@@ -116,7 +117,7 @@ unsigned int numberOfGoodVertexInCollection( const std::vector<susy::Vertex>& ve
 }
 
 unsigned int nTrackPrimaryVertex( const std::vector<susy::Vertex>& vertexVector ) {
-   /* Tracks coming from the first good vertex */
+   // Tracks coming from the first good vertex 
    for( std::vector<susy::Vertex>::const_iterator vtx = vertexVector.begin();
       vtx != vertexVector.end(); ++vtx ) {
       if( goodVertex( *vtx ) )
@@ -127,42 +128,6 @@ unsigned int nTrackPrimaryVertex( const std::vector<susy::Vertex>& vertexVector 
 }
 
 
-void TreeWriter::fillGenParticles() {
-  /**fill in generated particles for matching
-   * 
-   */
-   genPhotons.clear();
-   genElectrons.clear();
-
-   // genParticles
-   tree::Particle thisGenParticle;
-   for( susy::ParticleCollection::const_iterator it = event.genParticles.begin();
-     it != event.genParticles.end(); ++it ) {
-
-      // status 3: particles in matrix element
-      // status 2: intermediate particles
-      // status 1: final particles (but can decay in geant, etc)
-      if( it->momentum.Pt() < 40 || it->status != 1) continue;
-
-      thisGenParticle.pt = it->momentum.Pt();
-      thisGenParticle.eta = it->momentum.Eta();
-      thisGenParticle.phi = it->momentum.Phi();
-      thisGenParticle.bitFlag = 0;
-      int pdgId = std::abs(it->pdgId);
-      switch( pdgId ) {
-         case 22: // photon
-            genPhotons.push_back( thisGenParticle );
-            break;
-         case 11: // electron
-            genElectrons.push_back( thisGenParticle );
-            break;
-      }
-   }
-
-   if( loggingVerbosity > 1 )
-      std::cout << "Found " << genPhotons.size() << " generated photons and "
-      << genElectrons.size() << " generated electrons" << std::endl;
-}
 
 template <typename VectorClass>
 int indexOfnearestParticle( const tree::Particle& thisParticle, const std::vector<VectorClass>& particleVector,
@@ -174,7 +139,6 @@ int indexOfnearestParticle( const tree::Particle& thisParticle, const std::vecto
     * If serveral particles satisfy the requirements, the nearest in deltaR is
     * returned.
     */
-
    int index = -1; //default value
    std::map<float,int> map_dr_i;
    float dR, relPt;
@@ -222,11 +186,12 @@ TreeWriter::TreeWriter( int nFiles, char** fileList, std::string const& outputNa
    outputTree.Branch("electrons", &electrons);
    outputTree.Branch("met", &met, "met/F");
    outputTree.Branch("ht", &ht, "ht/F");
+   outputTree.Branch("weight", &weight, "weight/F");
    outputTree.Branch("nVertex", &nVertex, "nVertex/I");
    outputTree.Branch("nTracksPV", &nTracksPV, "nTracksPV/i");
 
-   hist2D["matchGenPhoton"]   = TH2F("", ";#DeltaR;p_{T}^{gen} / p_{T}", 1000, 0, .5, 200, 0, 2 );
-   hist2D["matchGenElectron"] = TH2F("", ";#DeltaR;p_{T}^{gen} / p_{T}", 1000, 0, .5, 200, 0, 2 );
+   hist2D["matchGenPhoton"]   = TH2F("matchGenPhoton", ";#DeltaR;p_{T}^{gen} / p_{T}", 1000, 0, .5, 200, 0, 2 );
+   hist2D["matchGenElectron"] = TH2F("matchGenElectron", ";#DeltaR;p_{T}^{gen} / p_{T}", 1000, 0, .5, 200, 0, 2 );
    hist1D["nGen"] = TH1F("", ";nGen;", 1, 0, 1 );
 }
 
@@ -241,6 +206,7 @@ void TreeWriter::SetJsonFile(TString const& filename) {
    /** Read a Json file which contains good runNumbers and Lumi-sections.
     * The content will be stored in the class variable 'goodLumiList'.
     */
+
    if( goodLumiList.size() ) {
       std::cout << "WARNING: Good lumi sections already defined. Now overwritten by " << filename << std::endl;
       return;
@@ -284,7 +250,47 @@ void TreeWriter::SetJsonFile(TString const& filename) {
    if( loggingVerbosity > 1 )
       std::cout << "JSON file for filtering included." << std::endl;
 }
-//Abstaende bis hier...
+
+
+void TreeWriter::fillGenParticles() {
+  /**fill in generated particles for matching
+   * 
+   */
+
+   genPhotons.clear();
+   genElectrons.clear();
+
+   // genParticles
+   tree::Particle thisGenParticle;
+   for( susy::ParticleCollection::const_iterator it = event.genParticles.begin();
+     it != event.genParticles.end(); ++it ) {
+
+      // status 3: particles in matrix element
+      // status 2: intermediate particles
+      // status 1: final particles (but can decay in geant, etc)
+      if( it->momentum.Pt() < 40 || it->status != 1) continue;
+
+      thisGenParticle.pt = it->momentum.Pt();
+      thisGenParticle.eta = it->momentum.Eta();
+      thisGenParticle.phi = it->momentum.Phi();
+      thisGenParticle.bitFlag = 0;
+      int pdgId = std::abs(it->pdgId);
+      switch( pdgId ) {
+         case 22: // photon
+            genPhotons.push_back( thisGenParticle );
+            break;
+         case 11: // electron
+            genElectrons.push_back( thisGenParticle );
+            break;
+      }
+   }
+
+   if( loggingVerbosity > 1 )
+      std::cout << "Found " << genPhotons.size() << " generated photons and "
+      << genElectrons.size() << " generated electrons" << std::endl;
+}
+
+
 bool TreeWriter::passTrigger() {
   /**
    * Checks if event passes the HLT trigger paths.
@@ -292,6 +298,7 @@ bool TreeWriter::passTrigger() {
    * If the a trigger path contains one of the triggers defined in triggerNames,
    * true will be returned. If no match is found, false is returned.
    */
+
    if( !triggerNames.size() ) {
       std::cout << "WARNING: No triggers selected" << std::endl;
       return true;
@@ -405,7 +412,7 @@ void TreeWriter::Loop() {
 tree::Photon photonToTree;
 
    for (long jentry=0; jentry < inputTree.GetEntries(); ++jentry) {
-      if( jentry > 10 ) break;
+      if( jentry > 100 ) break;
       event.getEntry(jentry);
 
       // For data, the weight is 1. Else take the pileup weight.
@@ -413,6 +420,7 @@ tree::Photon photonToTree;
       hist1D["nGen"].Fill( 0 );
       if ( event.isRealData && !isGoodLumi() ) continue;
       if ( event.isRealData && !passTrigger() ) continue;
+      
       //Generierte Teilchen einlesen
       fillGenParticles();
       susy::MET pfMet = event.metMap["pfMet"];
@@ -465,11 +473,11 @@ tree::Photon photonToTree;
          photonToTree._etaJet = jetIndex>-1 ? jets.at(jetIndex).eta : 0;
          photonToTree._phiJet = jetIndex>-1 ? jets.at(jetIndex).phi : 0;
          photonToTree.matchedJetIndex = jetIndex;*/
-   
+  
          //photon definition barrel
          bool isPhotonOrElectron =
          ( std::abs(photonToTree.eta) <= susy::etaGapBegin
-         && photonToTree.pt > 135                                            /* Min pt */
+         && photonToTree.pt > 135                                            // Min pt 
          && photonToTree.hadTowOverEm < 0.05
          && photonToTree.sigmaIetaIeta < 0.012
          && photonToTree.chargedIso < 2.6
@@ -528,7 +536,11 @@ tree::Photon photonToTree;
          std::cout << "Found " << photons.size() << " photons, "<<std::endl;
       }
 
-
+      if( !event.passMetFilters() || !event.passMetFilter( susy::kEcalLaserCorr) ){
+         continue;
+      }
+		  
+		  
       fillJets();
       
       //define and calculate ht
