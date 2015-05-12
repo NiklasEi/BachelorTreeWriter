@@ -412,11 +412,11 @@ void TreeWriter::Loop() {
 tree::Photon photonToTree;
 
    for (long jentry=0; jentry < inputTree.GetEntries(); ++jentry) {
-<<<<<<< HEAD
+
       // if( jentry > 10 ) break;
-=======
-      if( jentry > 100 ) break;
->>>>>>> fd0ca56bc17c33ad18e8c596ee58bf9179962e5d
+
+
+
       event.getEntry(jentry);
 
       // For data, the weight is 1. Else take the pileup weight.
