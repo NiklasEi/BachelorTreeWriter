@@ -512,8 +512,6 @@ tree::Photon photonToTree;
          && photonToTree.photonIso < 13+0.05*photonToTree.pt && photonToTree.photonIso > 0.13+0.0005*photonToTree.pt;
 
 
-		
-   
          if( loggingVerbosity > 2 ){ 
             if( isPhoton ) std::cout << " photon pT = " << photonToTree.pt << std::endl;
          }
