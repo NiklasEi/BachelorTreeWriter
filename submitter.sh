@@ -1,7 +1,7 @@
 #!/bin/zsh
 # This script submits all jobs to naf, which are defined in dataset
 
-version="04"
+version="05"
 datasets=(
 
 # QCD
@@ -28,10 +28,10 @@ datasets=(
  /pnfs/desy.de/cms/tier2/store/user/jschulz/nTuples/ZGamma_V02/
 
 ## Data
- /pnfs/desy.de/cms/tier2/store/user/kiesel/nTuples/PhotonHadA_V03/
- /pnfs/desy.de/cms/tier2/store/user/kiesel/nTuples/PhotonHadB_V03/
- /pnfs/desy.de/cms/tier2/store/user/kiesel/nTuples/PhotonHadC_V03/
- /pnfs/desy.de/cms/tier2/store/user/kiesel/nTuples/PhotonHadD_V03/
+# /pnfs/desy.de/cms/tier2/store/user/kiesel/nTuples/PhotonHadA_V03/
+# /pnfs/desy.de/cms/tier2/store/user/kiesel/nTuples/PhotonHadB_V03/
+# /pnfs/desy.de/cms/tier2/store/user/kiesel/nTuples/PhotonHadC_V03/
+# /pnfs/desy.de/cms/tier2/store/user/kiesel/nTuples/PhotonHadD_V03/
 
  /pnfs/desy.de/cms/tier2/store/user/kiesel/nTuples/PhotonA_V04/ 
  /pnfs/desy.de/cms/tier2/store/user/kiesel/nTuples/SinglePhotonB_V04/
