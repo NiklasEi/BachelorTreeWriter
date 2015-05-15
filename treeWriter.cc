@@ -182,6 +182,7 @@ TreeWriter::TreeWriter( int nFiles, char** fileList, std::string const& outputNa
    event.setInput( inputTree );
 
    outputTree.Branch("jets", &jets);
+   outputTree.Branch("jetphotons", &jetphotons);
    outputTree.Branch("photons", &photons);
    outputTree.Branch("electrons", &electrons);
    outputTree.Branch("met", &met, "met/F");
@@ -413,7 +414,7 @@ tree::Photon photonToTree;
 
    for (long jentry=0; jentry < inputTree.GetEntries(); ++jentry) {
 
-      // if( jentry > 10 ) break;
+      //if( jentry > 100 ) break;
 
 
 
@@ -425,18 +426,21 @@ tree::Photon photonToTree;
       if ( event.isRealData && !isGoodLumi() ) continue;
       if ( event.isRealData && !passTrigger() ) continue;
       
+      
+      //Jets einlesen
+      fillJets();
       //Generierte Teilchen einlesen
       fillGenParticles();
       susy::MET pfMet = event.metMap["pfMet"];
       met = pfMet.met();
-    
+      
       // vertices
 	  nVertex = numberOfGoodVertexInCollection( event.vertices );
 	  if( !nVertex ){
          continue;
       }
-	
-
+	  
+      
       nTracksPV = nTrackPrimaryVertex( event.vertices );
       if( loggingVerbosity > 2 ){
          std::cout << " nTracksPV = " << nTracksPV << std::endl;
@@ -503,7 +507,16 @@ tree::Photon photonToTree;
          bool isPhoton = isPhotonOrElectron && !photonToTree.pixelseed;
          bool isPhotonElectron = isPhotonOrElectron && photonToTree.pixelseed;
 
-   
+
+
+         // photonJet definition
+         bool isPhotonJet = !isPhotonOrElectron
+         && !photonToTree.pixelseed
+         && photonToTree.hadTowOverEm < 0.05
+         && photonToTree.sigmaIetaIeta < 0.012
+         && photonToTree.chargedIso < 26 && photonToTree.chargedIso > 0.26
+         && photonToTree.neutralIso < 35+0.4*photonToTree.pt && photonToTree.neutralIso > 0.35+0.004*photonToTree.pt
+         && photonToTree.photonIso < 13+0.05*photonToTree.pt && photonToTree.photonIso > 0.13+0.0005*photonToTree.pt;
 
 
 		
@@ -515,11 +528,9 @@ tree::Photon photonToTree;
          //matching generated particles to detected ones
          if( indexOfnearestParticle<tree::Particle>( photonToTree, genPhotons, .1, 0.9, 1.1, &hist2D["matchGenPhoton"] ) > -1 ){
             photonToTree.genPhoton = true;
-            //std::cout<<"found matched Photon"<<endl;
          }
          if( indexOfnearestParticle<tree::Particle>( photonToTree, genElectrons, .1, -1e6, 1e6, &hist2D["matchGenElectron"] ) > -1 ){
             photonToTree.genElectron = true;
-            //std::cout<<"found matched Electron"<<endl;
          }
 	    
 	    
@@ -531,10 +542,13 @@ tree::Photon photonToTree;
          if( isPhotonElectron ){
             electrons.push_back( photonToTree );
          }
-
+         if( isPhotonJet ){
+            jetphotons.push_back( photonToTree );
+         }
+         
 
       }//finished pushing back photons and electrons (already matched if possible)
-      if ( photons.size() ==0 && electrons.size() ==0) continue;
+      if ( !photons.size() && !electrons.size() && !jetphotons.size()) continue;
 
       if( loggingVerbosity > 1 ){
          std::cout << "Found " << photons.size() << " photons, "<<std::endl;
@@ -544,8 +558,7 @@ tree::Photon photonToTree;
          continue;
       }
 		  
-		  
-      fillJets();
+
       
       //define and calculate ht
       ht=0;

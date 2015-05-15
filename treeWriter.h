@@ -68,6 +68,7 @@ class TreeWriter {
     float weight;
     
     std::vector<tree::Jet> jets;
+    std::vector<tree::Photon> jetphotons;
     std::vector<tree::Photon> photons;
     std::vector<tree::Photon> electrons;
     std::vector<tree::Particle> genPhotons;
