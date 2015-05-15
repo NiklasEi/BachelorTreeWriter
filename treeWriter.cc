@@ -476,23 +476,16 @@ tree::Photon photonToTree;
          //
          photonToTree.genPhoton = false;
          photonToTree.genElectron = false;
-         /*int jetIndex = indexOfnearestParticle<tree::Jet>( photonToTree, jets, .2, .8, 3 );
-         photonToTree._ptJet = jetIndex>-1 ? jets.at(jetIndex).pt : 0;
-         photonToTree._etaJet = jetIndex>-1 ? jets.at(jetIndex).eta : 0;
-         photonToTree._phiJet = jetIndex>-1 ? jets.at(jetIndex).phi : 0;
-         photonToTree.matchedJetIndex = jetIndex;*/
   
          //photon definition barrel
          bool isPhotonOrElectron =
          ( std::abs(photonToTree.eta) <= susy::etaGapBegin
-         && photonToTree.pt > 135                                            // Min pt 
+         && photonToTree.pt > 145                                            // Min pt 
          && photonToTree.hadTowOverEm < 0.05
          && photonToTree.sigmaIetaIeta < 0.012
          && photonToTree.chargedIso < 2.6
          && photonToTree.neutralIso < 3.5+0.04*photonToTree.pt
          && photonToTree.photonIso < 1.3+0.005*photonToTree.pt
-         //&& photonToTree.neutralIso < 3.5+0.04*photonToTree.ptJet()
-         //&& photonToTree.photonIso < 1.3+0.005*photonToTree.ptJet()
          )
          // and the endcap definition, which is not used now
          || ( std::abs( photonToTree.eta ) >= susy::etaGapEnd
