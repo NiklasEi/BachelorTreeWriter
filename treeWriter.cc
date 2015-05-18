@@ -449,6 +449,7 @@ tree::Photon photonToTree;
 
       photons.clear();
       electrons.clear();
+      jetphotons.clear();
       //photons
       std::vector<susy::Photon> photonVector = event.photons["photons"];
       for(std::vector<susy::Photon>::iterator it = photonVector.begin();
