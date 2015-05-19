@@ -481,7 +481,7 @@ tree::Photon photonToTree;
          //photon definition barrel
          bool isPhotonOrElectron =
          ( std::abs(photonToTree.eta) <= susy::etaGapBegin
-         && photonToTree.pt > 145                                            // Min pt 
+         //&& photonToTree.pt > 145                                            // Min pt 
          && photonToTree.hadTowOverEm < 0.05
          && photonToTree.sigmaIetaIeta < 0.012
          && photonToTree.chargedIso < 2.6
