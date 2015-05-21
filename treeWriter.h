@@ -41,6 +41,7 @@ class TreeWriter {
     bool isGoodLumi() const;
 
     float getPileUpWeight();
+    float getHt() const;
     void fillJets();
 
     // Additional information for producing the output

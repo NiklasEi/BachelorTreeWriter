@@ -32,4 +32,10 @@ void tree::Particle::setStatus( int status ) {
 	bitFlag |= 1 << status;
 }
 
+
+// Photon
+
+float tree::Photon::ptJet() const {
+	return _ptJet ? _ptJet : pt;
+}
  

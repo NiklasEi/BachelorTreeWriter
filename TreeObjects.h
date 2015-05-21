@@ -12,6 +12,13 @@ enum genParticles {
 	kGenElectron
 };
 
+
+
+enum jetMatches {
+	kJetId,
+	kJetPhoton
+};
+
 class Particle {
 	public:
 		// functions
@@ -31,10 +38,15 @@ class Particle {
 
 class Photon : public Particle {
 	public:
+		float ptJet() const;
+		float _ptJet;
+		float _etaJet;
+		float _phiJet;
 		float sigmaIphiIphi;
 		float r9, sigmaIetaIeta, hadTowOverEm;
 		float chargedIso, neutralIso, photonIso;
 		int pixelseed;
+		short matchedJetIndex;
 };
 
 class Jet : public Particle{

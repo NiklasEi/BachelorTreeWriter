@@ -253,6 +253,7 @@ void TreeWriter::SetJsonFile(TString const& filename) {
 }
 
 
+
 void TreeWriter::fillGenParticles() {
   /**fill in generated particles for matching
    * 
@@ -366,6 +367,51 @@ float TreeWriter::getPileUpWeight(){
 }
 
 
+float TreeWriter::getHt() const {
+	/* HT is sum jet + sum photon + sum photonJet + sum photonElectron
+	 * For the jet sum, jets have to have a good Id or was used as match for a
+	 * photon/photonJet/photonElectron.
+	 * For the sum of photonObjects, the pt is only added in case the pt of the
+	 * matched jet was not added.
+	 */
+
+	float returnedHt = 0;
+	for(std::vector<tree::Jet>::const_iterator jet = jets.begin();
+			jet != jets.end(); ++jet ) {
+
+		if( jet->pt < 40 || std::abs(jet->eta) > 3. ) continue;
+		if( !jet->isStatus( tree::kJetId ) ) continue;
+		//std::cout << " add jet to HT " << jet->pt << std::endl;
+
+		returnedHt += jet->pt;
+	}
+
+	for( std::vector<tree::Photon>::const_iterator photon = photons.begin();
+			photon != photons.end(); ++photon ) {
+		if( photon->_ptJet == 0 ) {
+			//std::cout << " add photon to HT " << photon->pt << std::endl;
+			returnedHt += photon->pt;
+		}
+	}
+	for( std::vector<tree::Photon>::const_iterator photon = jetphotons.begin();
+			photon != jetphotons.end(); ++photon ) {
+		if( photon->_ptJet == 0 ) {
+			//std::cout << " add photonJet to HT " << photon->pt << std::endl;
+			returnedHt += photon->pt;
+		}
+	}
+	for( std::vector<tree::Photon>::const_iterator photon = electrons.begin();
+			photon != electrons.end(); ++photon ) {
+		if( photon->_ptJet == 0 ) {
+			//std::cout << " add photonElectron to HT " << photon->pt << std::endl;
+			returnedHt += photon->pt;
+		}
+	}
+	return returnedHt;
+}
+
+
+
 
 void TreeWriter::fillJets() {
   /** Read the jets from susyEvent and save them to jet vector.
@@ -384,7 +430,10 @@ void TreeWriter::fillJets() {
 
       if( std::abs(corrP4.Eta()) > 3 ) continue;
       if( corrP4.Pt() < 40 ) continue;
-      if( !isLooseJet( *it ) ) continue;
+      //jetToTree.bitFlag = 0;
+         if( isLooseJet( *it ) )
+            jetToTree.setStatus( tree::kJetId );
+
 
       jetToTree.pt = corrP4.Pt();
       jetToTree.eta = corrP4.Eta();
@@ -426,6 +475,7 @@ tree::Photon photonToTree;
       if ( event.isRealData && !isGoodLumi() ) continue;
       if ( event.isRealData && !passTrigger() ) continue;
       
+      cout<<"working1"<<endl;
       
       //Jets einlesen
       fillJets();
@@ -433,6 +483,8 @@ tree::Photon photonToTree;
       fillGenParticles();
       susy::MET pfMet = event.metMap["pfMet"];
       met = pfMet.met();
+      
+      cout<<"working2"<<endl;
       
       // vertices
 	  nVertex = numberOfGoodVertexInCollection( event.vertices );
@@ -457,6 +509,7 @@ tree::Photon photonToTree;
 		
 
     
+      cout<<"working3"<<endl;
 
          //dont use endcap
          if( std::abs( it->momentum.Eta() ) > susy::etaGapBegin ) continue;
@@ -477,7 +530,16 @@ tree::Photon photonToTree;
          //
          photonToTree.genPhoton = false;
          photonToTree.genElectron = false;
-  
+         
+      cout<<"working4"<<endl;
+
+         int jetIndex = indexOfnearestParticle<tree::Jet>( photonToTree, jets, .2, .8, 3 );
+         photonToTree._ptJet = jetIndex>-1 ? jets.at(jetIndex).pt : 0;
+         photonToTree._etaJet = jetIndex>-1 ? jets.at(jetIndex).eta : 0;
+         photonToTree._phiJet = jetIndex>-1 ? jets.at(jetIndex).phi : 0;
+         photonToTree.matchedJetIndex = jetIndex;
+         
+      cout<<"working5"<<endl;
          //photon definition barrel
          bool isPhotonOrElectron =
          ( std::abs(photonToTree.eta) <= susy::etaGapBegin
@@ -551,13 +613,19 @@ tree::Photon photonToTree;
 		  
 
       
-      //define and calculate ht
-      ht=0;
+      cout<<"working6"<<endl;
+      //calculate ht
+      ht = getHt();
+      double oldht=0;
       for(auto Jet : jets){
-	     ht+= Jet.pt;
+	     oldht+= Jet.pt;
       }
+      cout<<"Ht is: "<<ht<<" old ht was: "<<oldht<<endl;
+      
+      cout<<"working7"<<endl;
    
       outputTree.Fill();
+      cout<<"working8"<<endl;
    }//finished loop over all tree-entries
 
 
