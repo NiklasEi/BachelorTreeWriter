@@ -414,7 +414,7 @@ tree::Photon photonToTree;
 
    for (long jentry=0; jentry < inputTree.GetEntries(); ++jentry) {
 
-      //if( jentry > 100 ) break;
+      if( jentry > 100 ) break;
 
 
 
@@ -524,9 +524,8 @@ tree::Photon photonToTree;
          if( indexOfnearestParticle<tree::Particle>( photonToTree, genElectrons, .1, -1e6, 1e6, &hist2D["matchGenElectron"] ) > -1 ){
             photonToTree.genElectron = true;
          }
-	    
-	    
-	    
+
+
 	     //pushing candidates back
          if( isPhoton ){
             photons.push_back( photonToTree );
