@@ -1,7 +1,7 @@
 #!/bin/zsh
 # This script submits all jobs to naf, which are defined in dataset
 
-version="05"
+version="NoMinPt"
 datasets=(
 
 # QCD
@@ -46,7 +46,7 @@ datasets=(
 
 # settings
 outputFolder=/nfs/dust/cms/user/eicker
-filesPerJob=20
+filesPerJob=50
 prefix="dcap://dcache-cms-dcap.desy.de"
 
 for dataset in "${datasets[@]}"; do
