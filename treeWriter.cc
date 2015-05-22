@@ -275,7 +275,7 @@ void TreeWriter::fillGenParticles() {
       thisGenParticle.pt = it->momentum.Pt();
       thisGenParticle.eta = it->momentum.Eta();
       thisGenParticle.phi = it->momentum.Phi();
-      thisGenParticle.bitFlag = 0;
+      //thisGenParticle.bitFlag = 0;
       int pdgId = std::abs(it->pdgId);
       switch( pdgId ) {
          case 22: // photon
@@ -380,7 +380,7 @@ float TreeWriter::getHt() const {
 			jet != jets.end(); ++jet ) {
 
 		if( jet->pt < 40 || std::abs(jet->eta) > 3. ) continue;
-		if( !jet->isStatus( tree::kJetId ) ) continue;
+		//if( !jet->isStatus( tree::kJetId ) ) continue;
 		//std::cout << " add jet to HT " << jet->pt << std::endl;
 
 		returnedHt += jet->pt;
@@ -431,8 +431,8 @@ void TreeWriter::fillJets() {
       if( std::abs(corrP4.Eta()) > 3 ) continue;
       if( corrP4.Pt() < 40 ) continue;
       //jetToTree.bitFlag = 0;
-         if( isLooseJet( *it ) )
-            jetToTree.setStatus( tree::kJetId );
+      if( isLooseJet( *it ) ) continue;
+         //jetToTree.setStatus( tree::kJetId );
 
 
       jetToTree.pt = corrP4.Pt();
@@ -463,7 +463,7 @@ tree::Photon photonToTree;
 
    for (long jentry=0; jentry < inputTree.GetEntries(); ++jentry) {
 
-      if( jentry > 100 ) break;
+      //if( jentry > 10000 ) break;
 
 
 
@@ -475,7 +475,6 @@ tree::Photon photonToTree;
       if ( event.isRealData && !isGoodLumi() ) continue;
       if ( event.isRealData && !passTrigger() ) continue;
       
-      cout<<"working1"<<endl;
       
       //Jets einlesen
       fillJets();
@@ -484,7 +483,6 @@ tree::Photon photonToTree;
       susy::MET pfMet = event.metMap["pfMet"];
       met = pfMet.met();
       
-      cout<<"working2"<<endl;
       
       // vertices
 	  nVertex = numberOfGoodVertexInCollection( event.vertices );
@@ -508,9 +506,6 @@ tree::Photon photonToTree;
         it != photonVector.end(); ++it ) {
 		
 
-    
-      cout<<"working3"<<endl;
-
          //dont use endcap
          if( std::abs( it->momentum.Eta() ) > susy::etaGapBegin ) continue;
 
@@ -531,15 +526,15 @@ tree::Photon photonToTree;
          photonToTree.genPhoton = false;
          photonToTree.genElectron = false;
          
-      cout<<"working4"<<endl;
 
          int jetIndex = indexOfnearestParticle<tree::Jet>( photonToTree, jets, .2, .8, 3 );
-         photonToTree._ptJet = jetIndex>-1 ? jets.at(jetIndex).pt : 0;
-         photonToTree._etaJet = jetIndex>-1 ? jets.at(jetIndex).eta : 0;
-         photonToTree._phiJet = jetIndex>-1 ? jets.at(jetIndex).phi : 0;
+         photonToTree._ptJet = jetIndex>-1 ? jets.at(jetIndex).pt : 0.;
+         photonToTree._etaJet = jetIndex>-1 ? jets.at(jetIndex).eta : 0.;
+         photonToTree._phiJet = jetIndex>-1 ? jets.at(jetIndex).phi : 0.;
          photonToTree.matchedJetIndex = jetIndex;
-         
-      cout<<"working5"<<endl;
+         photonToTree._ptJet = 190.;
+
+
          //photon definition barrel
          bool isPhotonOrElectron =
          ( std::abs(photonToTree.eta) <= susy::etaGapBegin
@@ -567,6 +562,7 @@ tree::Photon photonToTree;
 
          // photonJet definition
          bool isPhotonJet = !isPhotonOrElectron
+         && photonToTree.pt > 145
          && !photonToTree.pixelseed
          && photonToTree.hadTowOverEm < 0.05
          && photonToTree.sigmaIetaIeta < 0.012
@@ -612,20 +608,16 @@ tree::Photon photonToTree;
       }
 		  
 
-      
-      cout<<"working6"<<endl;
       //calculate ht
       ht = getHt();
       double oldht=0;
       for(auto Jet : jets){
 	     oldht+= Jet.pt;
       }
-      cout<<"Ht is: "<<ht<<" old ht was: "<<oldht<<endl;
       
-      cout<<"working7"<<endl;
    
       outputTree.Fill();
-      cout<<"working8"<<endl;
+      
    }//finished loop over all tree-entries
 
 

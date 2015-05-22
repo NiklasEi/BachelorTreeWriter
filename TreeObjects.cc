@@ -38,4 +38,4 @@ void tree::Particle::setStatus( int status ) {
 float tree::Photon::ptJet() const {
 	return _ptJet ? _ptJet : pt;
 }
- 
+
