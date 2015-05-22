@@ -1,7 +1,7 @@
 #!/bin/zsh
 # This script submits all jobs to naf, which are defined in dataset
 
-version="NoMinPt"
+version="Test"
 datasets=(
 
 # QCD

@@ -532,7 +532,7 @@ tree::Photon photonToTree;
          photonToTree._etaJet = jetIndex>-1 ? jets.at(jetIndex).eta : 0.;
          photonToTree._phiJet = jetIndex>-1 ? jets.at(jetIndex).phi : 0.;
          photonToTree.matchedJetIndex = jetIndex;
-         photonToTree._ptJet = 190.;
+
 
 
          //photon definition barrel
