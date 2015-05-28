@@ -538,7 +538,7 @@ tree::Photon photonToTree;
          //photon definition barrel
          bool isPhotonOrElectron =
          ( std::abs(photonToTree.eta) <= susy::etaGapBegin
-         && photonToTree.ptJet() > 145                                            // Min pt 
+         && photonToTree.ptJet() > 175                                            // Min pt 
          && photonToTree.hadTowOverEm < 0.05
          && photonToTree.sigmaIetaIeta < 0.012
          && photonToTree.chargedIso < 2.6
@@ -562,7 +562,7 @@ tree::Photon photonToTree;
 
          // photonJet definition
          bool isPhotonJet = !isPhotonOrElectron
-         && photonToTree.ptJet() > 145
+         && photonToTree.ptJet() > 175
          && !photonToTree.pixelseed
          && photonToTree.hadTowOverEm < 0.05
          && photonToTree.sigmaIetaIeta < 0.012
