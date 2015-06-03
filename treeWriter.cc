@@ -135,7 +135,7 @@ int indexOfnearestParticle( const tree::Particle& thisParticle, const std::vecto
    /* Compare 'thisParticle' to each particle in the vector
     *
     * If a particle in the vector satisfies the cut values, its index is returned.
-    * If no particle if found, -1 is returned.
+    * If no particle is found, -1 is returned.
     * If serveral particles satisfy the requirements, the nearest in deltaR is
     * returned.
     */
@@ -182,6 +182,7 @@ TreeWriter::TreeWriter( int nFiles, char** fileList, std::string const& outputNa
    event.setInput( inputTree );
 
    outputTree.Branch("jets", &jets);
+   outputTree.Branch("cleanjets", &cleanjets);
    outputTree.Branch("jetphotons", &jetphotons);
    outputTree.Branch("photons", &photons);
    outputTree.Branch("electrons", &electrons);
@@ -447,6 +448,26 @@ void TreeWriter::fillJets() {
    }
 }
 
+void TreeWriter::fillCleanJets(){
+   /**clean Jet collection
+    *no jets that could possibly have a "connection" with a photon or electron
+    */
+
+   cleanjets.clear();
+   tree::Jet cleanjetToTree;
+   for(std::vector<tree::Jet>::const_iterator it = jets.begin(); it != jets.end(); ++it){
+      cleanjetToTree.pt = it->pt;
+      cleanjetToTree.eta = it->eta;
+      cleanjetToTree.phi = it->phi;
+      int completeindex = indexOfnearestParticle<tree::Photon>( cleanjetToTree, photons, .5, .0, 9999 ) +
+                          indexOfnearestParticle<tree::Photon>( cleanjetToTree, electrons, .5, .0, 9999 ) +
+                          indexOfnearestParticle<tree::Photon>( cleanjetToTree, jetphotons, .5, .0, 9999 );
+      if( completeindex==-3){
+         cleanjets.push_back( cleanjetToTree );
+      }
+   }
+}
+
 void TreeWriter::Loop() {
   /**
    * \brief Loops over input chain and fills tree
@@ -501,7 +522,7 @@ tree::Photon photonToTree;
       //photons
       std::vector<susy::Photon> photonVector = event.photons["photons"];
       for(std::vector<susy::Photon>::iterator it = photonVector.begin();
-        it != photonVector.end(); ++it ) {
+         it != photonVector.end(); ++it ) {
 		
 
          //dont use endcap
@@ -621,7 +642,10 @@ tree::Photon photonToTree;
 	  //   oldht+= Jet.pt;
       //}
       //cout<<"new ht: "<<ht<<"     old ht: "<<oldht<<endl;
-   
+      
+      fillCleanJets(); // need all photons, electrons, jetphotons here...
+      
+      
       outputTree.Fill();
       
    }//finished loop over all tree-entries

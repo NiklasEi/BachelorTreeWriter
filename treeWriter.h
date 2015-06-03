@@ -43,6 +43,7 @@ class TreeWriter {
     float getPileUpWeight();
     float getHt() const;
     void fillJets();
+    void fillCleanJets();
 
     // Additional information for producing the output
     TH1F pileupHisto;
@@ -69,6 +70,7 @@ class TreeWriter {
     float weight;
     
     std::vector<tree::Jet> jets;
+    std::vector<tree::Jet> cleanjets;
     std::vector<tree::Photon> jetphotons;
     std::vector<tree::Photon> photons;
     std::vector<tree::Photon> electrons;
