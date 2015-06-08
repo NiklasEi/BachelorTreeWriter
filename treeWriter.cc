@@ -459,9 +459,9 @@ void TreeWriter::fillCleanJets(){
       cleanjetToTree.pt = it->pt;
       cleanjetToTree.eta = it->eta;
       cleanjetToTree.phi = it->phi;
-      int completeindex = indexOfnearestParticle<tree::Photon>( cleanjetToTree, photons, .5, .0, 9999 ) +
-                          indexOfnearestParticle<tree::Photon>( cleanjetToTree, electrons, .5, .0, 9999 ) +
-                          indexOfnearestParticle<tree::Photon>( cleanjetToTree, jetphotons, .5, .0, 9999 );
+      int completeindex = indexOfnearestParticle<tree::Photon>( cleanjetToTree, photons, .2, .8, 3 ) +
+                          indexOfnearestParticle<tree::Photon>( cleanjetToTree, electrons, .2, .8, 3 ) +
+                          indexOfnearestParticle<tree::Photon>( cleanjetToTree, jetphotons, .2, .8, 3 );
       if( completeindex==-3){
          cleanjets.push_back( cleanjetToTree );
       }
