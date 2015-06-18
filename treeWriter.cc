@@ -429,7 +429,7 @@ void TreeWriter::fillJets() {
 
       TLorentzVector corrP4 = it->jecScaleFactors.at("L1FastL2L3") * it->momentum;
 
-      if( std::abs(corrP4.Eta()) > 3 ) continue;
+      if( std::abs(corrP4.Eta()) > susy::etaGapBegin ) continue;
       if( corrP4.Pt() < 40 ) continue;
       if( !isLooseJet( *it ) ) continue;
 
@@ -459,9 +459,9 @@ void TreeWriter::fillCleanJets(){
       cleanjetToTree.pt = it->pt;
       cleanjetToTree.eta = it->eta;
       cleanjetToTree.phi = it->phi;
-      int completeindex = indexOfnearestParticle<tree::Photon>( cleanjetToTree, photons, .2, .8, 3 ) +
-                          indexOfnearestParticle<tree::Photon>( cleanjetToTree, electrons, .2, .8, 3 ) +
-                          indexOfnearestParticle<tree::Photon>( cleanjetToTree, jetphotons, .2, .8, 3 );
+      int completeindex = indexOfnearestParticle<tree::Photon>( cleanjetToTree, photons, .5, 0., 999 ) +
+                          indexOfnearestParticle<tree::Photon>( cleanjetToTree, electrons, .5, 0., 999 ) +
+                          indexOfnearestParticle<tree::Photon>( cleanjetToTree, jetphotons, .5, 0., 999 );
       if( completeindex==-3){
          cleanjets.push_back( cleanjetToTree );
       }
@@ -554,6 +554,7 @@ tree::Photon photonToTree;
          //cout<<"matchedJetIndex: "<<photonToTree.matchedJetIndex<<"       jetIndex:"<<jetIndex<<endl;
          //if(!photonToTree.ptMJet==0)
          //   cout<<"ptMJet1: "<<photonToTree.ptMJet<<endl;
+         photonToTree.ptStar = photonToTree.ptMJet > 0? photonToTree.ptMJet : photonToTree.pt;
 
 
          //photon definition barrel

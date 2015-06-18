@@ -40,6 +40,7 @@ class Photon : public Particle {
 	public:
 		float ptJet() const;
 		float ptMJet;
+		float ptStar;
 		float etaMJet;
 		float phiMJet;
 		float sigmaIphiIphi;
