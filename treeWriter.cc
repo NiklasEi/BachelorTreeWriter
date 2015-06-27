@@ -389,21 +389,21 @@ float TreeWriter::getHt() const {
 
 	for( std::vector<tree::Photon>::const_iterator photon = photons.begin();
 			photon != photons.end(); ++photon ) {
-		if( photon->ptMJet == 0 ) {
+		if( photon->ptMJet <= 0.1 ) {
 			//std::cout << " add photon to HT " << photon->pt << std::endl;
 			returnedHt += photon->pt;
 		}
 	}
 	for( std::vector<tree::Photon>::const_iterator photon = jetphotons.begin();
 			photon != jetphotons.end(); ++photon ) {
-		if( photon->ptMJet == 0 ) {
+		if( photon->ptMJet <= 0.1 ) {
 			//std::cout << " add photonJet to HT " << photon->pt << std::endl;
 			returnedHt += photon->pt;
 		}
 	}
 	for( std::vector<tree::Photon>::const_iterator photon = electrons.begin();
 			photon != electrons.end(); ++photon ) {
-		if( photon->ptMJet == 0 ) {
+		if( photon->ptMJet <= 0.1 ) {
 			//std::cout << " add photonElectron to HT " << photon->pt << std::endl;
 			returnedHt += photon->pt;
 		}
@@ -433,6 +433,7 @@ void TreeWriter::fillJets() {
       if( corrP4.Pt() < 40 ) continue;
       if( !isLooseJet( *it ) ) continue;
       
+      jetToTree.bitFlag = 0;
       jetToTree.setStatus( tree::kJetId );
 
 
@@ -440,10 +441,23 @@ void TreeWriter::fillJets() {
       jetToTree.eta = corrP4.Eta();
       jetToTree.phi = corrP4.Phi();
       jets.push_back( jetToTree );
+      jetToTree.bCSV = it->bTagDiscriminators[susy::kCSV];
+		// jet composition
+		jetToTree.chargedHadronEnergy = it->chargedHadronEnergy;
+		jetToTree.neutralHadronEnergy = it->neutralHadronEnergy;
+		jetToTree.photonEnergy = it->photonEnergy;
+		jetToTree.electronEnergy = it->electronEnergy;
+		jetToTree.muonEnergy = it->muonEnergy;
+		jetToTree.HFHadronEnergy = it->HFHadronEnergy;
+		jetToTree.HFEMEnergy = it->HFEMEnergy;
+		jetToTree.chargedEmEnergy = it->chargedEmEnergy;
+		jetToTree.chargedMuEnergy = it->chargedMuEnergy;
+		jetToTree.neutralEmEnergy = it->neutralEmEnergy;
 
       if( loggingVerbosity > 2 )
          std::cout << " p_T, jet = " << jetToTree.pt << std::endl;
    }// for jet
+	std::sort( jets.begin(), jets.end(), tree::EtGreater);
 
    if( loggingVerbosity > 1 ){
       std::cout << "Found " << jets.size() << " uncleaned jets" << std::endl;
@@ -484,7 +498,7 @@ tree::Photon photonToTree;
 
    for (long jentry=0; jentry < inputTree.GetEntries(); ++jentry) {
 
-      //if( jentry > 1000 ) break;
+      if( jentry > 100 ) break;
 
 
 
@@ -618,9 +632,12 @@ tree::Photon photonToTree;
          if( isPhotonJet ){
             jetphotons.push_back( photonToTree );
          }
+      }//finished pushing back photons and electrons (already matched if possible)
+		std::sort( photons.begin(), photons.end(), tree::EtGreater );
+		std::sort( electrons.begin(), electrons.end(), tree::EtGreater );
+		std::sort( jetphotons.begin(), jetphotons.end(), tree::EtGreater );
          
 
-      }//finished pushing back photons and electrons (already matched if possible)
       if ( !photons.size() && !electrons.size() && !jetphotons.size()) continue;
       /*
       if(photons.size()==1){
@@ -640,6 +657,7 @@ tree::Photon photonToTree;
 
       //calculate ht
       ht = getHt();
+      cout<<ht<<endl;
       //double oldht=0;
       //for(auto Jet : jets){
 	  //   oldht+= Jet.pt;
