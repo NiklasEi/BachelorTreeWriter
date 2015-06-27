@@ -381,7 +381,7 @@ float TreeWriter::getHt() const {
 			jet != jets.end(); ++jet ) {
 
 		if( jet->pt < 40 || std::abs(jet->eta) > 3. ) continue;
-		//if( !jet->isStatus( tree::kJetId ) ) continue;
+		if( !jet->isStatus( tree::kJetId ) ) continue;
 		//std::cout << " add jet to HT " << jet->pt << std::endl;
 
 		returnedHt += jet->pt;
@@ -432,6 +432,8 @@ void TreeWriter::fillJets() {
       if( std::abs(corrP4.Eta()) > 3 ) continue;
       if( corrP4.Pt() < 40 ) continue;
       if( !isLooseJet( *it ) ) continue;
+      
+      jetToTree.setStatus( tree::kJetId );
 
 
       jetToTree.pt = corrP4.Pt();
