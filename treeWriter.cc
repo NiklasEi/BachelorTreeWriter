@@ -498,7 +498,7 @@ tree::Photon photonToTree;
 
    for (long jentry=0; jentry < inputTree.GetEntries(); ++jentry) {
 
-      if( jentry > 100 ) break;
+      //if( jentry > 100 ) break;
 
 
 
