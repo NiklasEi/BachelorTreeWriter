@@ -429,7 +429,7 @@ void TreeWriter::fillJets() {
 
       TLorentzVector corrP4 = it->jecScaleFactors.at("L1FastL2L3") * it->momentum;
 
-      if( std::abs(corrP4.Eta()) > 3 ) continue;
+      if( std::abs(corrP4.Eta()) > susy::etaGapBegin ) continue; //3
       if( corrP4.Pt() < 40 ) continue;
       if( !isLooseJet( *it ) ) continue;
       
@@ -498,7 +498,7 @@ tree::Photon photonToTree;
 
    for (long jentry=0; jentry < inputTree.GetEntries(); ++jentry) {
 
-      if( jentry > 100 ) break;
+      //if( jentry > 100 ) break;
 
 
 
