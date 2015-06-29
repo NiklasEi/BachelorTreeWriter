@@ -657,7 +657,6 @@ tree::Photon photonToTree;
 
       //calculate ht
       ht = getHt();
-      cout<<ht<<endl;
       //double oldht=0;
       //for(auto Jet : jets){
 	  //   oldht+= Jet.pt;
