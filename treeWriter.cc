@@ -195,6 +195,7 @@ TreeWriter::TreeWriter( int nFiles, char** fileList, std::string const& outputNa
    hist2D["matchGenPhoton"]   = TH2F("matchGenPhoton", ";#DeltaR;p_{T}^{gen} / p_{T}", 1000, 0, .5, 200, 0, 2 );
    hist2D["matchGenElectron"] = TH2F("matchGenElectron", ";#DeltaR;p_{T}^{gen} / p_{T}", 1000, 0, .5, 200, 0, 2 );
    hist1D["nGen"] = TH1F("", ";nGen;", 1, 0, 1 );
+   hist1D["nPassTrigger"] = TH1F("", ";nPassTrigger;", 1, 0, 1 );
 }
 
 TreeWriter::~TreeWriter() {
@@ -507,8 +508,9 @@ tree::Photon photonToTree;
       // For data, the weight is 1. Else take the pileup weight.
       weight = event.isRealData ? 1. : getPileUpWeight();
       hist1D["nGen"].Fill( 0 );
-      if ( event.isRealData && !isGoodLumi() ) continue;
       if ( event.isRealData && !passTrigger() ) continue;
+      hist1D["nPassTrigger"].Fill(0);
+      if ( event.isRealData && !isGoodLumi() ) continue;
       
       
       //Jets einlesen
