@@ -635,9 +635,9 @@ tree::Photon photonToTree;
             jetphotons.push_back( photonToTree );
          }
       }//finished pushing back photons and electrons (already matched if possible)
-		std::sort( photons.begin(), photons.end(), tree::EtGreater );
-		std::sort( electrons.begin(), electrons.end(), tree::EtGreater );
-		std::sort( jetphotons.begin(), jetphotons.end(), tree::EtGreater );
+		std::sort( photons.begin(), photons.end(), tree::PtStarGreater );
+		std::sort( electrons.begin(), electrons.end(), tree::PtStarGreater );
+		std::sort( jetphotons.begin(), jetphotons.end(), tree::PtStarGreater );//sort by ptStar
          
 
       if ( !photons.size() && !electrons.size() && !jetphotons.size()) continue;

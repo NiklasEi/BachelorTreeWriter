@@ -66,6 +66,7 @@ class Jet : public Particle{
 };
 
 bool EtGreater(const tree::Particle, const tree::Particle);
+bool PtStarGreater(const tree::Photon, const tree::Photon);
 
 } // end namespace definition
 

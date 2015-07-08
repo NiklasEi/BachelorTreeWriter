@@ -3,6 +3,10 @@
 // Particle
 
 bool tree::EtGreater(const tree::Particle p1, const tree::Particle p2) {
+	return p1.pt > p2.pt;
+}
+
+bool tree::PtStarGreater(const tree::Photon p1, const tree::Photon p2) {
 	return p1.ptStar > p2.ptStar;
 }
 
