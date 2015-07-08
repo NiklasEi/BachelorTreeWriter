@@ -1,7 +1,7 @@
 #!/bin/zsh
 # This script submits all jobs to naf, which are defined in dataset
 
-version="Test"
+version="12"
 datasets=(
 
 # QCD
@@ -46,7 +46,7 @@ datasets=(
 
 # settings
 outputFolder=/nfs/dust/cms/user/eicker
-filesPerJob=50
+filesPerJob=20
 prefix="dcap://dcache-cms-dcap.desy.de"
 
 for dataset in "${datasets[@]}"; do
@@ -74,4 +74,13 @@ for dataset in "${datasets[@]}"; do
         # o: log file
     }
     # all jobs
+
 done #dataset
+
+qsub -N signal -b y -j y -l os=sld6 -l h_vmem=1000M -l h_rt=11:00:00 -l site=hh \
+`pwd`/submitScriptTemplate.sh $outputFolder/T5wg_1200_1025_tree.root ${prefix}/pnfs/desy.de/cms/tier2/store/user/kiesel/nTuples/T5wg_V04/T5wg_1200_1025.root
+
+
+qsub -N signal -b y -j y -l os=sld6 -l h_vmem=1000M -l h_rt=11:00:00 -l site=hh \
+`pwd`/submitScriptTemplate.sh $outputFolder/T5wg_1000_175_tree.root ${prefix}/pnfs/desy.de/cms/tier2/store/user/kiesel/nTuples/T5wg_V04/T5wg_1000_175.root
+
