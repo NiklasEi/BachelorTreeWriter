@@ -3,7 +3,7 @@
 // Particle
 
 bool tree::EtGreater(const tree::Particle p1, const tree::Particle p2) {
-	return p1.pt > p2.pt;
+	return p1.ptStar > p2.ptStar;
 }
 
 float tree::Particle::DeltaR( const Particle &p2 ) const {
